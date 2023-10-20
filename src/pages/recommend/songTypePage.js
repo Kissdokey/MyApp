@@ -15,7 +15,7 @@ import MusicCard from '../../components/Recomend/MusicCard';
 import renderLoadMoreView from '../../components/Common/more';
 import mockData from '../../MockData/keywords';
 import {useDispatch, useSelector} from 'react-redux';
-import {setUrlContext} from '../../Context/context';
+import {setUrlContext, Covers} from '../../Context/context';
 import {
   ifLike,
   pushItem,
@@ -24,7 +24,32 @@ import {
   onChangeDefaultVolume,
   setCurrentIndex,
 } from '../../store/playListSlice';
-export default function Erciyuan({navigation,type}) {
+export default function Erciyuan({navigation, type}) {
+  React.useEffect(() => {
+    const color =
+      type === '二次元'
+        ? 'rgb(50,43,107)'
+        : type === '古风'
+        ? 'rgb(26,59,79)'
+        : 'rgb(25,66,24)';
+    const color2 =
+      type === '二次元'
+        ? 'rgb(140,102,255)'
+        : type === '古风'
+        ? 'rgb(102,204,255)'
+        : 'rgb(115,255,102)';
+    navigation.setOptions({
+      tabBarStyle: {backgroundColor: color, height: 60, paddingTop: 15},
+      tabBarIndicatorStyle: {
+        backgroundColor: color2,
+        height: 34,
+        width: 80,
+        borderRadius: 8,
+        margin: 8,
+        marginBottom: 3,
+      },
+    });
+  }, []);
   const dispatch = useDispatch();
   const keyValue = useSelector(state => {
     return state.list.keyValue;
@@ -35,6 +60,7 @@ export default function Erciyuan({navigation,type}) {
   const [isloading, setIsloading] = React.useState(false);
   const [songs, setSongs] = React.useState([]);
   const [offset, setOffset] = React.useState(0);
+  const [covers, setCovers] = React.useState([]);
   // React.useEffect(() => {
   //   const fetchSongs = () => {
   //     fetch(`${host}/search?keywords=二次元`)
@@ -73,7 +99,7 @@ export default function Erciyuan({navigation,type}) {
     return res.join(',');
   }
 
-  function onPressCard(data,setUrl) {
+  function onPressCard(data, setUrl) {
     const info = {
       name: data.name,
       artists: transArrayToString(data.artists || []),
@@ -86,7 +112,7 @@ export default function Erciyuan({navigation,type}) {
         let currentIndex = list.findIndex((item, idx) => {
           return item.id === data.id;
         });
-         setUrl(keyValue[data.id]);
+        setUrl(keyValue[data.id]);
         dispatch(setCurrentIndex(currentIndex === -1 ? 0 : currentIndex));
         return;
       }
@@ -105,31 +131,54 @@ export default function Erciyuan({navigation,type}) {
     };
     fetchUrl();
   }
+  React.useEffect(() => {
+    fetch(
+      `https://osu.ppy.sh/beatmapsets/search?cursor_string=${
+        type === '二次元'
+          ? '1'
+          : type === '古风'
+          ? 'eyJhcHByb3ZlZF9kYXRlIjoxNjk2NzI5NDEzMDAwLCJpZCI6MjAxOTczMH0'
+          : 'eyJhcHByb3ZlZF9kYXRlIjoxNjk3MzM3Nzc1MDAwLCJpZCI6MjAwNDIxM30'
+      }`,
+    )
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        let beatsArray = res.beatmapsets;
+        let covers = beatsArray.map(item => {
+          return item.covers;
+        });
+        setCovers(covers);
+      });
+  }, []);
   return (
     <setUrlContext.Consumer>
       {setUrl => (
-        <FlatList
-          numColumns={2}
-          data={songs}
-          renderItem={({item, index}) => (
-            <View style={{backgroundColor: 'white', width: '50%'}}>
-              <MusicCard
-                data={item}
-                index={index}
-                onPressCard={() => {
-                  onPressCard(item,setUrl);
-                }}
-                navigation={navigation}></MusicCard>
-            </View>
-          )}
-          keyExtractor={(item, index) => index}
-          refreshing={isloading}
-          // onRefresh={() => {
-          //   loadData(); //下拉刷新加载数据
-          // }}
-          ListFooterComponent={() => renderLoadMoreView()}
-          onEndReached={() => loadMoreData()}
-        />
+        <View>
+          <FlatList
+            data={songs}
+            renderItem={({item, index}) => (
+              <View style={{backgroundColor: 'rgb(34,40,42)', width: '100%'}}>
+                <MusicCard
+                  data={item}
+                  index={index}
+                  imgSrc={covers[index % 50]}
+                  onPressCard={() => {
+                    onPressCard(item, setUrl);
+                  }}
+                  navigation={navigation}></MusicCard>
+              </View>
+            )}
+            keyExtractor={(item, index) => index}
+            refreshing={isloading}
+            // onRefresh={() => {
+            //   loadData(); //下拉刷新加载数据
+            // }}
+            ListFooterComponent={() => renderLoadMoreView()}
+            onEndReached={() => loadMoreData()}
+          />
+        </View>
       )}
     </setUrlContext.Consumer>
   );

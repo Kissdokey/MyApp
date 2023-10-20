@@ -13,6 +13,7 @@ import {
   TouchableHighlight,
   StyleSheet,
   TouchableWithoutFeedback,
+  StatusBar,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -24,7 +25,7 @@ import {
   setPlayerStyle,
 } from '../../store/playListSlice';
 import MusicPlayer from '../../components/Recomend/MusicPlayer';
-import {setUrlContext} from '../../Context/context';
+import {setUrlContext,Covers} from '../../Context/context';
 const Stack = createNativeStackNavigator();
 export default function AppStack({navigation}) {
   const [url, setUrl] = React.useState('');
@@ -52,6 +53,11 @@ export default function AppStack({navigation}) {
   }
   return (
     <View style={{flex: 1, position: 'relative'}}>
+      <StatusBar
+        translucent={true}
+        backgroundColor="rgba(0, 0, 0, 0)"
+        barStyle={'light-content'}
+      />
       <setUrlContext.Provider value={setUrl}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Home" component={HomeTabs} />

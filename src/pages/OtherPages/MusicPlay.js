@@ -10,6 +10,7 @@ import {
   ImageBackground,
   TouchableWithoutFeedback,
   ScrollView,
+  BackHandler,
 } from 'react-native';
 import host from '../../host';
 import MusicPlayer from '../../components/Recomend/MusicPlayer';
@@ -39,10 +40,10 @@ export default function MusicPlay({route, navigation}) {
   const [data, setData] = React.useState({});
   const [errorMsg, setErrorMsg] = React.useState('');
   const [clickFn, setClickFn] = React.useState(true);
-  const [scrollInfo,setScrollInfo] = React.useState({})
-  const [scrollHeight,setScrollHeight] = React.useState(0)
+  const [scrollInfo, setScrollInfo] = React.useState({});
+  const [scrollHeight, setScrollHeight] = React.useState(0);
   const myActive = React.useRef(null);
-  const scrollWindow = React.useRef(null)
+  const scrollWindow = React.useRef(null);
   const dispatch = useDispatch();
   const keylyric = useSelector(state => {
     return state.list.keylyric;
@@ -56,26 +57,33 @@ export default function MusicPlay({route, navigation}) {
   const currentPosition = useSelector(state => {
     return state.list.currentPosition;
   });
-  React.useEffect(()=>{
-      if(!scrollWindow.current) {
-        return
-      }
-      scrollWindow.current.measure((frameX, frameY, frameWidth, frameHeight, pageX, pageY) => {
-        console.log("wwheg",frameHeight); // 当前组件的高度
-        console.log("wwtop",pageY); // 当前组件距离顶部的距离
-        setScrollInfo({height:frameHeight,top:pageY})
-      },)
-      
-  },[scrollWindow])
   React.useEffect(() => {
+    if (!scrollWindow.current) {
+      return;
+    }
+    scrollWindow.current.measure(
+      (frameX, frameY, frameWidth, frameHeight, pageX, pageY) => {
+        console.log('wwheg', frameHeight); // 当前组件的高度
+        console.log('wwtop', pageY); // 当前组件距离顶部的距离
+        setScrollInfo({height: frameHeight, top: pageY});
+      },
+    );
+  }, [scrollWindow]);
+  React.useEffect(() => {
+    console.log("mounted")
     if (!myActive.current) {
       return;
     }
     myActive.current.measure(
       (frameX, frameY, frameWidth, frameHeight, pageX, pageY) => {
-        let distance = ((frameHeight/2)+pageY-scrollInfo.top-(scrollInfo.height/2))
-        scrollWindow.current.scrollTo({x:0,y:scrollHeight+distance,animated:true})
-        setScrollHeight(scrollHeight<0?0:scrollHeight+distance)
+        let distance =
+          frameHeight / 2 + pageY - scrollInfo.top - scrollInfo.height / 2;
+        scrollWindow.current.scrollTo({
+          x: 0,
+          y: scrollHeight + distance,
+          animated: true,
+        });
+        setScrollHeight(scrollHeight < 0 ? 0 : scrollHeight + distance);
       },
     );
   }, [myActive.current]);
@@ -141,6 +149,16 @@ export default function MusicPlay({route, navigation}) {
         });
     }
   }
+  React.useEffect(() => {
+    function goback() {
+      navigation.navigate('Home');
+      dispatch(setPlayerStyle(0));
+      return true;
+    }
+    BackHandler.addEventListener('hardwareBackPress', goback);
+
+    BackHandler.removeEventListener('hardwareBackPress', goback);
+  }, []);
   return (
     <View style={{flex: 1}}>
       {state === 0 && (

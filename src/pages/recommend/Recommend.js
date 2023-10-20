@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
   StyleSheet,
   ScrollView,
+  StatusBar
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Settings from '../OtherPages/setting';
@@ -20,16 +21,16 @@ export default function Recommend({}) {
     <Tab.Navigator screenOptions={{
       tabBarLabelStyle: { fontSize: 12 },
       tabBarItemStyle: { width: 100 },
-      tabBarStyle: { backgroundColor: 'powderblue' },
-      tabBarAndroidRipple: { borderless: true },
-      tabBarPressColor:'rgb(176,224,230)',
+      tabBarStyle: { backgroundColor: 'powderblue',height:60,paddingTop:15 },
+      tabBarAndroidRipple: { borderless: false },
+      tabBarPressColor:'',
       tabBarActiveTintColor:'black',
       tabBarInactiveTintColor:'white',
-      tabBarBounces:false,
+      tabBarBounces:true,
       tabBarShowIcon:true,
       tabBarScrollEnabled:true,
       tabBarIndicatorStyle:{
-        backgroundColor:'pink',
+        backgroundColor:'rgb(140,102,255)',
         height:34,
         width:80,
         borderRadius:8,

@@ -16,6 +16,7 @@ import {
   ScrollView,
   Keyboard,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import MusicItem from '../components/Music/MusicItem';
 import host from '../host';
@@ -30,7 +31,7 @@ import {
   setCurrentIndex,
 } from '../store/playListSlice';
 
-export default function MusicHeader() {
+export default function MusicHeader({navigation}) {
   const [keyWord, setKeyWord] = React.useState('');
   const [data, setData] = React.useState([]);
   const [isloading, setIsloading] = React.useState(false);
@@ -90,7 +91,7 @@ export default function MusicHeader() {
       alias: data.alias,
       fee: data.fee,
     };
-    console.log(info)
+    console.log(info);
     const fetchUrl = () => {
       if (data.id in keyValue) {
         let currentIndex = list.findIndex((item, idx) => {
@@ -100,7 +101,7 @@ export default function MusicHeader() {
         dispatch(setCurrentIndex(currentIndex === -1 ? 0 : currentIndex));
         return;
       }
-      console.log(data.id)
+      console.log(data.id);
       fetch(`${host}/song/url?id=${data.id}`)
         .then(res => {
           return res.json();
@@ -116,6 +117,20 @@ export default function MusicHeader() {
     };
     fetchUrl();
   }
+  React.useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: {backgroundColor: 'rgb(102,30,59)', height: 60, paddingTop: 15},
+      tabBarIndicatorStyle:{
+        backgroundColor:'rgb(255,102,171)',
+        height:34,
+        width:80,
+        borderRadius:8,
+        margin:8,
+        marginBottom:3
+
+      }
+    });
+  }, []);
   return (
     <setUrlContext.Consumer>
       {setUrl => (

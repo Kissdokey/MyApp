@@ -230,6 +230,19 @@ export default function LickPage({navigation}) {
   React.useEffect(() => {
     fetchSongs();
   }, []);
+  React.useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: {backgroundColor: 'rgb(111,61,31)', height: 60, paddingTop: 15},
+      tabBarIndicatorStyle:{
+        backgroundColor:'rgb(255,217,102)',
+        height:34,
+        width:80,
+        borderRadius:8,
+        margin:8,
+        marginBottom:3
+      }
+    });
+  }, []);
   return (
     <>
       {!isLogin ? (
